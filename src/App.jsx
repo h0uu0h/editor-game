@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { GameProvider, useGame } from './context/GameContext'
 import { LevelProvider, useLevel } from './context/LevelContext'
 import TopBar from './components/TopBar'
@@ -9,6 +9,7 @@ import Toasts from './components/Toasts'
 import PublishModal from './components/PublishModal'
 import Particles from './components/Particles'
 import StoryMode from './components/StoryMode'
+import Onboarding from './components/Onboarding'
 import { createTileData } from './constants/gameData'
 
 function GameInit() {
@@ -36,6 +37,15 @@ function AppInner() {
   const [showStory, setShowStory] = useState(false)
   const { active: levelActive } = useLevel()
 
+  const [showOnboarding, setShowOnboarding] = useState(() => {
+    return !localStorage.getItem('onboarding_done')
+  })
+
+  const finishOnboarding = useCallback(() => {
+    setShowOnboarding(false)
+    localStorage.setItem('onboarding_done', '1')
+  }, [])
+
   return (
     <>
       <GameInit />
@@ -51,6 +61,7 @@ function AppInner() {
       {(showStory || levelActive) && (
         <StoryMode onClose={() => setShowStory(false)} />
       )}
+      {showOnboarding && <Onboarding onFinish={finishOnboarding} />}
     </>
   )
 }
